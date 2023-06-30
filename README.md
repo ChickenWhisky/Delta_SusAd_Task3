@@ -5,25 +5,7 @@ To begin open up the terminal and enter the following commands
 
 ## Setup
 
-To initialise the reverse proxy and server mess.txt 
-```bash
-$ chmod +x ./initialise.sh
-$ ./initialise.sh
-```
-
-To activate the server and setup phpadmin and the userdetails website
-```bash
-$ docker compose up --build
-```
-
-To add data to the Postgress database
-```bash
-$ python3 ./add_data_to_db.py
-```
-To run the cronjob to back up data periodically
-```bash
-$ ./cronjob_setter.sh
-```
+Will be updated Soon
 
 ## Normal Mode
 
