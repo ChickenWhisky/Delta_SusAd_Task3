@@ -1,20 +1,61 @@
 import os
 import socket
-import zlib
-
-HOST="localhost"
-PORT="9999"
+import zipfile
 
 
-s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect(HOST,PORT)
+IP = socket.gethostbyname(socket.gethostname())
+PORT = 9996
+ADDR = (IP, PORT)
+FORMAT = "utf-8"
+SIZE = 1024
 
-# Getting file location from user
-file_loc=input("Enter file location(enter full path) :\n")
-file=os.open(file_loc,"rb")
 
-# Size of selected file  
-file_size=os.path.getsize(file_loc)
 
-# Compresses the file
-compressed_file = zlib.compress(file, zlib.Z_BEST_COMPRESSION)  
+def rename_file_to_zip(file_name):
+    new_file_name = os.path.splitext(file_name)[0] + ".zip"
+
+    return new_file_name
+
+def main():
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect(ADDR)
+
+    while True:
+        data = client.recv(SIZE).decode(FORMAT)
+        cmd, msg = data.split("@")
+
+        if cmd == "DISCONNECTED":
+            print(f"[SERVER]: {msg}")
+            break
+        elif cmd == "OK":
+            print(f"{msg}")
+
+        data = input("$ ") or "a random string so that if user inputs nothing it takes this in and doesnt break the program"
+        data = data.split(" ")
+        cmd = data[0]
+
+        if cmd == "HELP":
+            client.send(cmd.encode(FORMAT))
+        elif cmd == "LOGOUT":
+            client.send(cmd.encode(FORMAT))
+            break
+        elif cmd == "LIST":
+            client.send(cmd.encode(FORMAT))
+        elif cmd == "DELETE":
+            client.send(f"{cmd}@{data[1]}".encode(FORMAT))
+        elif cmd == "UPLOAD":
+            path = data[1]
+
+            with open(f"{path}", "r") as f:
+                text = f.read()
+            filename = path.split("/")[-1]
+            send_data = f"{cmd}@{filename}@{text}"
+            client.send(send_data.encode(FORMAT))
+        else:
+            client.send(cmd.encode(FORMAT))
+
+    print("Disconnected from the server.")
+    client.close()
+
+if __name__ == "__main__":
+    main()
