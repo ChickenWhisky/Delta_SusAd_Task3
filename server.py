@@ -4,16 +4,17 @@ import socket
 import threading
 import zipfile
 import shutil
-
+import psycopg2
 
 IP = socket.gethostbyname(socket.gethostname())
-PORT = 9996
+PORT = 9999
+DB_PORT=5432
 ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
 SERVER_DATA_PATH = "server_data"                                                    # Temporarily for testing sake we add all the users data in here
 
-def compress_file(file_path):
+def compress_file(file_path):                                                       # Function that compresses a give file
     base_name = os.path.basename(file_path)                                         # Extracts the base name of the file eg /delta/take/me.in basename is me.in
     file_name, _ = os.path.splitext(base_name)                                      # Splits the base name into name of file and extension eg me.in is split into me and .in 
     zip_file_name = file_name + '.zip'                                              # Adds .zip extension to the zip file name
@@ -25,11 +26,27 @@ def compress_file(file_path):
 
     return zip_file_name
 
-        
+def find_file(file_name):                                                           # Function to check if a file exists in that directory
+    current_directory = SERVER_DATA_PATH
+    file_path = os.path.join(current_directory, file_name)
+
+    if os.path.isfile(file_path):               
+        return file_path
+    else:
+        return None
+
+def decompress_file(file_path):
+    with zipfile.ZipFile(file_path, 'r') as zipf:
+        extracted_files = zipf.namelist()
+        zipf.extractall(os.path.dirname(file_path))
+    return extracted_files
+
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
-    conn.send("OK@Welcome to the File Server. \
-    Type HELP to read about the list of avaliable commands".encode(FORMAT))         # Sends the user a welcome message
+    conn.send("OK@Welcome to the File Server.\
+Type HELP to read about the list of avaliable commands".encode(FORMAT))         # Sends the user a welcome message
+
+
     
     while True:
         data = conn.recv(SIZE).decode(FORMAT)
@@ -49,15 +66,38 @@ def handle_client(conn, addr):
         elif cmd == "UPLOAD":
             name, text = data[1], data[2]
             filepath = os.path.join(SERVER_DATA_PATH, name)
-            print(filepath)
             with open(filepath, "w") as f:
                 f.write(text)
             compressed_file_name=compress_file(filepath)
-            print(f"New file {compressed_file_name} created")    
+            print(f"New file {compressed_file_name} created\n")    
             os.system(f"rm {filepath}")
 
             send_data = "OK@File uploaded successfully."
             conn.send(send_data.encode(FORMAT))
+
+        elif cmd == "DOWNLOAD" :
+            name = data[1]
+            send_data = "OK@"
+            file_path=find_file(name)
+            
+            if file_path is None :
+                send_data += "File not found."
+                conn.send(send_data.encode(FORMAT))
+
+            else:
+                list_of_file_names_in_zip_folder=decompress_file(file_path)
+                for i in list_of_file_names_in_zip_folder:
+                    with open(f"{SERVER_DATA_PATH}/{i}", "r") as f:
+                        data = f.read()
+                    send_data += f"{i}@{data}"
+                    conn.send(send_data.encode(FORMAT))
+                    os.system(f"rm {SERVER_DATA_PATH}/{i}")
+                ok="OK@"
+                conn.send(ok.encode(FORMAT))
+
+        elif cmd == "FILE_DOESNT_EXIST" :
+            ok="OK@"
+            conn.send(ok.encode(FORMAT))
 
         elif cmd == "DELETE":
             files = os.listdir(SERVER_DATA_PATH)
@@ -77,26 +117,30 @@ def handle_client(conn, addr):
 
         elif cmd == "LOGOUT":
             break
+
         elif cmd == "HELP":
             data = "OK@"
             data += "LIST: List all the files from the server.\n"
             data += "DOWNLOAD <filename> Downloads a file from the server.\n"
-            data += "UPLOAD <path>: Upload a file to the server.\n"
+            data += "UPLOAD_FILE <path>: Upload a file to the server.\n"
+            data += "UPLOAD_FOLDER <path>: Upload a folder to the server.\n"
             data += "DELETE <filename>: Delete a file from the server.\n"
             data += "LOGOUT: Disconnect from the server.\n"
             data += "HELP: List all the commands."
 
             conn.send(data.encode(FORMAT))
+            
         elif cmd == '':
             data="OK@Invalid command. Type HELP to veiw all commands"
             conn.send(data.encode(FORMAT))
+        
         else:
             data="OK@Invalid command. Type HELP to veiw all commands"
             conn.send(data.encode(FORMAT))
             
 
 
-    print(f"[DISCONNECTED] {addr} disconnected")
+    print(f"[DISCONNECTED] {addr} disconnected\n")
     conn.close()
 
 def main():
@@ -110,7 +154,7 @@ def main():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}\n")
 
 if __name__ == "__main__":
     main()
