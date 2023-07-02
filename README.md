@@ -9,14 +9,14 @@ Will be updated Soon
 
 ## Normal Mode
 
-- [ ] Make a File Server and client
+- [X] Make a File Server and client
     - [X] Implement Listing out all the available files
-    - [ ] Implement Download files
+    - [X] Implement Download files
     - [X] Implement Upload files
     - [X] Implement Download files
     - [X] Implement Logout 
     - [X] Implement HELP command
-    - [ ] Implement compression
+    - [X] Implement compression
 
 - [ ] Add authentication
 
