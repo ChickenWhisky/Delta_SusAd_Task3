@@ -1,10 +1,11 @@
 import os
 import socket
 import zipfile
+import getpass
 
 
 IP = socket.gethostbyname(socket.gethostname())
-PORT = 9999
+PORT = 6969
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 1024
@@ -24,6 +25,14 @@ def rename_file_to_zip(file_name):
 
     return new_file_name
 
+def input_as_stars(prompt):
+    # Use getpass to get user input without displaying it
+    password = getpass.getpass(prompt=prompt)
+    
+    # Return the input as stars
+    return "*" * len(password)
+
+
 
 # Main function
 
@@ -40,6 +49,12 @@ def main():
             break
         elif cmd == "OK":
             print(f"{msg}")
+        
+        elif cmd == "AUTH_CHECK" :
+            print(f"{msg}")
+            userName=input("Username   :")
+            passWord=input_as_stars("Password   :")
+            client.send(f"{userName}@{passWord}")
 
         data = input("$ ") or "random string so that program doesnt break"
         data = data.split(" ")

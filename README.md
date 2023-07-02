@@ -5,7 +5,14 @@ To begin open up the terminal and enter the following commands
 
 ## Setup
 
-Will be updated Soon
+```bash
+$ docker compose up --build
+```
+
+To add data to the Postgress database
+```bash
+$ python3 ./add_data_to_db.py
+```
 
 ## Normal Mode
 

@@ -9,19 +9,30 @@ services:
     ports:
       - '5432:5432'
     volumes: 
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data_for_task3
     networks:
       - pgnetwork
 
   server:
     build: .
+    ports:
+      - '6969:6969'
+    networks :
+      - pgnetwork
     restart : always
+    depends_on:
+      - db
+    volumes:
+      - urmom:/app
+    links : 
+      - db
     
 
   
 volumes:
   db:
     driver: local
+  urmom:
 
 networks:
   pgnetwork:
