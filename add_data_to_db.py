@@ -8,8 +8,8 @@ logging.basicConfig(format='%(name)s:[%(levelname)s] %(message)s',  level=loggin
 log = logging.getLogger(__name__)
 
 conn = psycopg2.connect(
-    host="0.0.0.0",
-    database="deltatask3",
+    host='0.0.0.0',
+    database="postgres",
     user="postgres",
     password="postgres",
     port=5432
@@ -25,7 +25,7 @@ def initialize_tables():
     and false if they alreadt existed.
     """
     query = """
-    CREATE TABLE IF NOT EXISTS studentdetails (
+    CREATE TABLE IF NOT EXISTS userDetails (
             name VARCHAR(50) PRIMARY KEY,
             password VARCHAR(50)
     );
@@ -36,10 +36,10 @@ def initialize_tables():
 
 def add_users():
     cursor.execute(
-                "INSERT INTO studentdetails VALUES (thomas,password) ON CONFLICT DO NOTHING",
+                "INSERT INTO userDetails VALUES ('thomas','password') ON CONFLICT DO NOTHING",
             )
     cursor.execute(
-                    "INSERT INTO studentdetails VALUES (avishek,password) ON CONFLICT DO NOTHING",
+                    "INSERT INTO userDetails VALUES ('avishek','password') ON CONFLICT DO NOTHING",
                 )
     conn.commit()
             

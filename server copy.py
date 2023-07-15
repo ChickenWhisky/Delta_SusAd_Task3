@@ -13,7 +13,9 @@ PORT = 6969
 ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
-SERVER_DATA_PATH = "server_data"                                                    # Temporarily for testing sake we add all the users data in her
+SERVER_DATA_PATH = "server_data"                                                    # Temporarily for testing sake we add all the users data in here
+
+
 def authentication_server(username, password):                                      # Function to check wether the given user exists and if user has valid credentials
                                                                                     # Connect to the PostgreSQL database
     conn = psycopg2.connect(                                                        
@@ -78,7 +80,6 @@ def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     conn.send("OK@\t\tWelcome to the File Server.\n".encode(FORMAT))                      # Sends the user a welcome message
 
-    time.sleep(1)
 
     conn.send("AUTH_CHECK@Please enter user info\n".encode(FORMAT))
     auth_data=conn.recv(SIZE).decode(FORMAT)

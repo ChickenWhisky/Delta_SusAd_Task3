@@ -2,14 +2,15 @@ version: '3.8'
 services:
   db:
     image: postgres:14.1-alpine
-    restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER = postgres
+      - POSTGRES_PASSWORD = postgres
+      - POSTGRES_DB = postgres
+    restart : always
     ports:
       - '5432:5432'
     volumes: 
-      - db:/var/lib/postgresql/data_for_task3
+      - db:/var/lib/postgresql/data
     networks:
       - pgnetwork
 
@@ -20,19 +21,19 @@ services:
     networks :
       - pgnetwork
     restart : always
+    expose:
+      - '5432'
     depends_on:
       - db
     volumes:
-      - urmom:/app
+      - local_db_backup:/app
     links : 
       - db
-    
 
-  
 volumes:
   db:
     driver: local
-  urmom:
+  local_db_backup:
 
 networks:
   pgnetwork:
