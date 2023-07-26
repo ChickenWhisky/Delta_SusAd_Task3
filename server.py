@@ -13,7 +13,9 @@ PORT = 6969
 ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
-SERVER_DATA_PATH = "server_data"                                                    # Temporarily for testing sake we add all the users data in her
+SERVER_DATA_PATH = "server_data"                                                    # Temporarily for testing sake we add all the users data in here
+
+
 def authentication_server(username, password):                                      # Function to check wether the given user exists and if user has valid credentials
                                                                                     # Connect to the PostgreSQL database
     conn = psycopg2.connect(                                                        
@@ -31,12 +33,9 @@ def authentication_server(username, password):                                  
     cursor.execute("SELECT * FROM userDetails WHERE name = %s AND password = %s",(username, password))
     
     result = cursor.fetchone()                                                      # Fetch the result
-
-    cursor.close()
-    conn.close()
     
     # Return True if the user credentials are found, else False
-    if result:
+    if result[1]== password and result[0] == username:
         return True
     else:
         return False
@@ -77,9 +76,7 @@ def decompress_file(file_path):
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     conn.send("OK@\t\tWelcome to the File Server.\n".encode(FORMAT))                      # Sends the user a welcome message
-
-    time.sleep(1)
-
+    time.sleep(0.10)
     conn.send("AUTH_CHECK@Please enter user info\n".encode(FORMAT))
     auth_data=conn.recv(SIZE).decode(FORMAT)
     auth_data=auth_data.split("@")
@@ -87,12 +84,12 @@ def handle_client(conn, addr):
     user_verification = authentication_server(userName,passWord)
     
     while True :
-        SERVER_DATA_PATH="userName"
+        SERVER_DATA_PATH=userName
         if user_verification:
             
-            conn.send(f"OK@AUTHDONE".encode(FORMAT))            
-            conn.send(f"OK@Welcome back {userName}.Type HELP to read about the list of avaliable commands".encode(FORMAT))
-            
+            conn.send(f"OK@AUTHDONE@Welcome back {userName}.Type HELP to read about the list of avaliable commands".encode(FORMAT))            
+            time.sleep(0.10)
+            conn.send("OK@ ".encode(FORMAT))
             while True:
                 data = conn.recv(SIZE).decode(FORMAT)
                 data = data.split("@")

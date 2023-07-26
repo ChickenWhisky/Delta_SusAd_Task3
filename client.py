@@ -40,17 +40,17 @@ def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
     
-    data = client.recv(SIZE).decode(FORMAT)
+    data = client.recv(SIZE).decode(FORMAT)                                         # Welcome to the File Server.
     data = data.split("@")
     cmd , msg = data[0] , data[1]
     print(f"{msg}")
     
-    data = client.recv(SIZE).decode(FORMAT)
+    data = client.recv(SIZE).decode(FORMAT)                                         # Please enter user info
     data = data.split("@")
     cmd , msg = data[0] , data[1]
     print(f"{msg}")
     
-    userName=input("Username   :")
+    userName=input("Username   :")                                                  # User enters credentials
     passWord=input_as_stars()
     print(userName)
     print(passWord)
@@ -58,17 +58,17 @@ def main():
     
     data = client.recv(SIZE).decode(FORMAT)
     data = data.split("@")
-    cmd , msg = data[0] , data[1]
+    cmd , msg , display_msg = data[0] , data[1] , data[2]
 
-    if cmd == "AUTHDONE":
-        
+    if msg == "AUTHDONE":
+        print(display_msg)
         while True:
             data = client.recv(SIZE).decode(FORMAT)
             data = data.split("@")
             cmd , msg = data[0] , data[1]
             
 
-            if cmd == "DISCONNECTED":
+            if cmd == "DISCONNECTED":                                               
                 print(f"[SERVER]: {msg}")
                 break
             elif cmd == "OK":

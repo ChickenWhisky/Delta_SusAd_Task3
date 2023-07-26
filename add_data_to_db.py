@@ -2,7 +2,7 @@ import logging
 import psycopg2
 from datetime import date
 
-#logging library is for the sake of testing
+#logging library is for logging in what happens while this script runs
 
 logging.basicConfig(format='%(name)s:[%(levelname)s] %(message)s',  level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -36,10 +36,12 @@ def initialize_tables():
 
 def add_users():
     cursor.execute(
-                "INSERT INTO userDetails VALUES ('thomas','password') ON CONFLICT DO NOTHING",
+                "INSERT INTO userDetails (name ,password) VALUES ('thomas','password') ON CONFLICT DO NOTHING",
             )
+    conn.commit()
+    
     cursor.execute(
-                    "INSERT INTO userDetails VALUES ('avishek','password') ON CONFLICT DO NOTHING",
+                "INSERT INTO userDetails (name ,password) VALUES ('avishek','password') ON CONFLICT DO NOTHING",
                 )
     conn.commit()
             

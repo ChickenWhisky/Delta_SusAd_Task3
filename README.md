@@ -25,14 +25,14 @@ $ python3 ./add_data_to_db.py
     - [X] Implement HELP command
     - [X] Implement compression
 
-- [ ] Add authentication
+- [X] Add authentication
 
-    - [ ] Implement user authentication while conecting to the server. You can add the user entries (password and username) in db beforehand, a dedicated signup page is not necessary.
-    - [ ] A user should only be able to access their own files.
+    - [X] Implement user authentication while conecting to the server. You can add the user entries (password and username) in db beforehand, a dedicated signup page is not necessary.
+    - [X] A user should only be able to access their own files.
 
-- [ ] Dockerise the server
-    - [ ] Using docker-compose, Dockerise the server and the db.
-    - [ ] The files should be persistent.
+- [X] Dockerise the server
+    - [X] Using docker-compose, Dockerise the server and the db.
+    - [X] The files should be persistent.
 
 ## Superuser Mode
 
