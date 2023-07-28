@@ -4,13 +4,12 @@ import zipfile
 import getpass
 
 
-IP = socket.gethostbyname(socket.gethostname())
-PORT = 6969
-ADDR = ('127.0.0.1', PORT)
+IP = socket.gethostbyname("localhost")
+PORT = 9876
+ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 1024
-CLIENT_DATA_PATH = "client_data"
-
+CLIENT_DATA_PATH = os.getcwd()                    # Gets Current directory of client                   
 # Functions for the program
 
 def decompress_file(file_path):
@@ -32,7 +31,6 @@ def input_as_stars():
     return password
 
 
-
 # Main function
 
 def main():
@@ -40,57 +38,42 @@ def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
     
-    data = client.recv(SIZE).decode(FORMAT)                                         # Welcome to the File Server.
-    data = data.split("@")
-    cmd , msg = data[0] , data[1]
-    print(f"{msg}")
     
     data = client.recv(SIZE).decode(FORMAT)                                         # Please enter user info
     data = data.split("@")
-    cmd , msg = data[0] , data[1]
+    msg = data[0]
     print(f"{msg}")
     
-    userName=input("Username   :")                                                  # User enters credentials
+    userName=input("Username:   ")                                                  # User enters credentials
     passWord=input_as_stars()
-    print(userName)
-    print(passWord)
     client.send(f"{userName}@{passWord}".encode(FORMAT))
     
     data = client.recv(SIZE).decode(FORMAT)
     data = data.split("@")
-    cmd , msg , display_msg = data[0] , data[1] , data[2]
+    cmd , display_msg = data[0] , data[1] 
 
-    if msg == "AUTHDONE":
+    if cmd == "AUTHDONE":
         print(display_msg)
         while True:
-            data = client.recv(SIZE).decode(FORMAT)
-            data = data.split("@")
-            cmd , msg = data[0] , data[1]
             
-
-            if cmd == "DISCONNECTED":                                               
-                print(f"[SERVER]: {msg}")
-                break
-            elif cmd == "OK":
-                print(f"{msg}")
-
             data = input("$ ") or "random string so that program doesnt break"
             data = data.split(" ")
             cmd = data[0]
+            cmd_to_be_sent = cmd+"@@"
 
             if cmd == "HELP":
-                client.send(cmd.encode(FORMAT))
-
+                client.send(cmd_to_be_sent.encode(FORMAT))
+                
             elif cmd == "LOGOUT":
-                client.send(cmd.encode(FORMAT))
+                client.send(cmd_to_be_sent.encode(FORMAT))
                 break
 
             elif cmd == "LIST":
-                client.send(cmd.encode(FORMAT))
-
+                client.send(cmd_to_be_sent.encode(FORMAT))
+                
             elif cmd == "DELETE":
-                client.send(f"{cmd}@{data[1]}".encode(FORMAT))
-
+                client.send(f"{cmd}@{data[1]}@".encode(FORMAT))
+                
             elif cmd == "UPLOAD":
                 path = os.path.join(CLIENT_DATA_PATH, data[1])
                 if os.path.isfile(path) :
@@ -99,13 +82,14 @@ def main():
                     filename = path.split("/")[-1]
                     send_data = f"{cmd}@{filename}@{text}"
                     client.send(send_data.encode(FORMAT))
+                    
                 else :
                     print("File doesnt exist")
-                    send_data="FILE_DOESNT_EXIST"
+                    send_data="FILE_DOESNT_EXIST@@"
                     client.send(send_data.encode(FORMAT))
                 
             elif cmd == "DOWNLOAD" :
-                client.send(f"{cmd}@{data[1]}".encode(FORMAT))
+                client.send(f"{cmd}@{data[1]}@".encode(FORMAT))
                 data1 = client.recv(SIZE).decode(FORMAT)
                 data1 = data1.split("@")
                 name = data1[1]
@@ -121,13 +105,24 @@ def main():
 
                 
             else:
-                client.send(cmd.encode(FORMAT))
-
+                client.send(cmd_to_be_sent.encode(FORMAT))
+            
+            
+            data = client.recv(SIZE).decode(FORMAT)
+            data = data.split("@")
+            cmd , msg = data[0] , data[1]
+            
+            if cmd == "DISCONNECTED":                                               
+                print(f"[SERVER]: {msg}")
+                break
+            elif cmd == "OK":
+                print(f"{msg}")
+                
         print("Disconnected from the server.")
         client.close()
     else:
         client.close()
-        print("Invalid credentials")
+        print(display_msg)
         
         
 if __name__ == "__main__":
