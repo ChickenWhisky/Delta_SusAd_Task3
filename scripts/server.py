@@ -6,7 +6,6 @@ import threading                                                                
 import zipfile                                                                      # For compression and decompression
 import shutil                                                                       # To move files around
 import psycopg2                                                                     # To access postgress db for authentication of user
-import time
 import logging                                                                       
 
 IP = socket.gethostbyname(socket.gethostname())
@@ -14,7 +13,6 @@ PORT = 9876
 ADDR = ( IP , PORT )
 SIZE = 1024
 FORMAT = "utf-8"
-global SERVER_DATA_PATH
 
 
 
@@ -95,7 +93,6 @@ def handle_client(conn,addr):
         if verification_checker:
             SERVER_DATA_PATH = "/app/data/"+userName
             conn.send(f"AUTHDONE@Welcome back {userName}.Type HELP to read about the list of avaliable commands".encode(FORMAT))            
-            # time.sleep(0.10)
             while True :
                 data = conn.recv(SIZE).decode(FORMAT)
                 data = data.split("@")
@@ -105,7 +102,7 @@ def handle_client(conn,addr):
                     send_data = "OK@"
 
                     if len(files) == 0:
-                            send_data += "The server directory is empty"
+                            send_data = "ERROR@The server directory is empty"
                     else:
                         send_data += "\n".join(f for f in files)
                     conn.send(send_data.encode(FORMAT))
@@ -142,9 +139,9 @@ def handle_client(conn,addr):
                             ok="OK@"
                             conn.send(ok.encode(FORMAT))
                             
-                elif cmd == "FILE_DOESNT_EXIST" :
-                    ok="OK@"
-                    conn.send(ok.encode(FORMAT))
+                # elif cmd == "FILE_DOESNT_EXIST" :
+                #     ok="ERROR@"
+                #     conn.send(ok.encode(FORMAT))
 
                 elif cmd == "DELETE":
                     files = os.listdir(SERVER_DATA_PATH)
@@ -171,7 +168,7 @@ def handle_client(conn,addr):
                     data += "DOWNLOAD <filename> Downloads a file from the server.\n"
                     data += "UPLOAD_FILE <path>: Upload a file to the server.\n"
                     data += "UPLOAD_FOLDER <path>: Upload a folder to the server.\n"
-                    data += "DELETE <filename>: Delete a file from the server.\n"
+                    data += "DELETE <filename/foldername>: Delete a file from the server.\n"
                     data += "LOGOUT: Disconnect from the server.\n"
                     data += "HELP: List all the commands."
 

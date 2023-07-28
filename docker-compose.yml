@@ -15,7 +15,9 @@ services:
       - WowDataFlowsThroughHere
 
   server:
-    build: .
+    build: 
+      context: ./
+      dockerfile: server.Dockerfile
     ports:
       - '9876:9876'
     networks :

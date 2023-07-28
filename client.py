@@ -61,20 +61,20 @@ def main():
             cmd = data[0]
             cmd_to_be_sent = cmd+"@@"
 
-            if cmd == "HELP":
+            if cmd == "HELP" or cmd == "help":
                 client.send(cmd_to_be_sent.encode(FORMAT))
                 
-            elif cmd == "LOGOUT":
+            elif cmd == "LOGOUT" or cmd == "logout":
                 client.send(cmd_to_be_sent.encode(FORMAT))
                 break
 
-            elif cmd == "LIST":
+            elif cmd == "LIST" or cmd == "list":
                 client.send(cmd_to_be_sent.encode(FORMAT))
                 
-            elif cmd == "DELETE":
+            elif cmd == "DELETE" or cmd == "delete":
                 client.send(f"{cmd}@{data[1]}@".encode(FORMAT))
                 
-            elif cmd == "UPLOAD":
+            elif cmd == "UPLOAD" or cmd == "upload":
                 path = os.path.join(CLIENT_DATA_PATH, data[1])
                 if os.path.isfile(path) :
                     with open(f"{path}", "r") as f:
@@ -83,26 +83,28 @@ def main():
                     send_data = f"{cmd}@{filename}@{text}"
                     client.send(send_data.encode(FORMAT))
                     
-                else :
-                    print("File doesnt exist")
-                    send_data="FILE_DOESNT_EXIST@@"
-                    client.send(send_data.encode(FORMAT))
+                # else :
+                #     print("File doesnt exist")
+                #     send_data="FILE_DOESNT_EXIST@@"
+                #     client.send(send_data.encode(FORMAT))
                 
-            elif cmd == "DOWNLOAD" :
-                client.send(f"{cmd}@{data[1]}@".encode(FORMAT))
-                data1 = client.recv(SIZE).decode(FORMAT)
-                data1 = data1.split("@")
-                name = data1[1]
-                
-                if name == "File not found." :
-                    print(name)
-                else :
-                    text = data1[2]
-                    filepath = os.path.join(CLIENT_DATA_PATH, name)
-                    with open(filepath, "w") as f:
-                        f.write(text)
-                    print(f"New file {name} created")    
-
+            elif cmd == "DOWNLOAD" or cmd == "download":
+                try:
+                    client.send(f"{cmd}@{data[1]}@".encode(FORMAT))
+                    data1 = client.recv(SIZE).decode(FORMAT)
+                    data1 = data1.split("@")
+                    name = data1[1]
+                    
+                    if name == "File not found." :
+                        print(f"<{name}>")
+                    else :
+                        text = data1[2]
+                        filepath = os.path.join(CLIENT_DATA_PATH, name)
+                        with open(filepath, "w") as f:
+                            f.write(text)
+                        print(f"New file {name} created")    
+                except:
+                    print("<No path entered>")
                 
             else:
                 client.send(cmd_to_be_sent.encode(FORMAT))
@@ -117,6 +119,8 @@ def main():
                 break
             elif cmd == "OK":
                 print(f"{msg}")
+            elif cmd == "ERROR":
+                print(f"<{msg}>")
                 
         print("Disconnected from the server.")
         client.close()

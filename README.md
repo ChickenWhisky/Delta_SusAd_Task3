@@ -1,4 +1,4 @@
-# Delta SysAd Task-3
+# Delta SUSad Task-3
 
 Hello and welcome to my Delta Inductions Task 3 for the Sysad domain.
 To begin open up the terminal and enter the following commands
@@ -9,9 +9,10 @@ To begin open up the terminal and enter the following commands
 $ docker compose up --build
 ```
 
-To add data to the Postgress database
+## Client Usage
 ```bash
-$ python3 ./add_data_to_db.py
+$ cd to/path/where/repo/exists
+$ python3 client.py
 ```
 
 ## Normal Mode
@@ -34,4 +35,9 @@ $ python3 ./add_data_to_db.py
     - [X] Using docker-compose, Dockerise the server and the db.
     - [X] The files should be persistent.
 
-## SOK
+## Superuser Mode
+
+- [ ] Client should be able to specify a folder to upload.
+- [ ] They should be able to search for files using regex.
+- [X] Add feature to be able to remove files.
+- [ ] Encrypt the files being transferred (using AES-256).
