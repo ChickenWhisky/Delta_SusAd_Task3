@@ -1,6 +1,5 @@
 # Delta SUSad Task-3
 
-Hello and welcome to my Delta Inductions Task 3 for the Sysad domain.
 To begin open up the terminal and enter the following commands
 
 ## Setup
@@ -15,7 +14,7 @@ $ cd to/path/where/repo/exists
 $ python3 client.py
 ```
 
-## Normal Mode
+## Check List
 
 - [X] Make a File Server and client
     - [X] Implement Listing out all the available files
@@ -35,7 +34,7 @@ $ python3 client.py
     - [X] Using docker-compose, Dockerise the server and the db.
     - [X] The files should be persistent.
 
-## Superuser Mode
+## Would Like to add in the future
 
 - [ ] Client should be able to specify a folder to upload.
 - [ ] They should be able to search for files using regex.
